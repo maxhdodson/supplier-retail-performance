@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Supplier Retail Performance</title>
-<meta name="description" content="Interactive retail analytics dashboard on simulated point-of-sale data for a made-up consumer goods supplier.">
+<title>Supplier Retail Performance Analysis</title>
+<meta name="description" content="Interactive dashboard on a simulated dataset: weekly point-of-sale sales, margin, promotion, in-stock and shelf-space analysis for a consumer goods supplier.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -95,7 +95,7 @@
   }
   .icon-btn:hover { background: rgba(243,238,231,.16); }
   .icon-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, th:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.08; letter-spacing: -.02em; font-weight: 700; margin: 0 0 14px; max-width: 18ch; }
+  h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.08; letter-spacing: -.02em; font-weight: 700; margin: 0 0 14px; max-width: 24ch; }
   h1 em { font-style: normal; color: #dc7926; }
   .lede { max-width: 66ch; color: #d9d2c6; font-size: 15.5px; margin: 0; }
   .lede b { color: #fff; font-weight: 600; }
@@ -190,7 +190,9 @@
   .etl-chip span { font-size: 12px; color: var(--muted); }
   .etl-chip.key { border-color: var(--accent); }
 
-  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 22px 20px 44px; }
+  footer { max-width: 1240px; margin: 8px auto 0; padding: 8px 28px 48px; }
+  .data-note { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 14px 18px; font-size: 15px; color: var(--ink); }
+  .foot-meta { margin-top: 14px; font-size: 13px; color: var(--ink-2); text-align: center; }
 
   .reveal { opacity: 0; transform: translateY(10px); animation: rise .6s ease forwards; }
   @keyframes rise { to { opacity: 1; transform: none; } }
@@ -237,12 +239,11 @@
     <div class="topbar">
       <div class="eyebrow">Supplier Retail Performance</div>
       <div class="top-actions">
-        <span class="pill-sim">Simulated data</span>
         <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode">Dark mode</button>
       </div>
     </div>
-    <h1>What sells, what stalls, and <em>what the shelf earns</em></h1>
-    <p class="lede">Weekly point-of-sale analysis for a made-up consumer goods supplier: sales and margin, promotions, in-stock, and shelf space. The supplier, brands, items and stores are <b>all simulated</b>; nothing here is real company or retailer data.</p>
+    <h1>Supplier Retail Performance Analysis</h1>
+    <p class="lede">Weekly point-of-sale sales, margin, promotion, in-stock and shelf-space analysis for a consumer goods supplier.</p>
   </div>
 </header>
 
@@ -251,7 +252,7 @@
 
   <div class="grid-2">
     <div class="panel reveal">
-      <h2 id="catTitle">Category performance</h2>
+      <h2 id="catTitle">Net sales by category</h2>
       <p class="sub">Last 52 weeks net sales, share of total, and change vs. the prior 52 weeks.</p>
       <div id="catRows"></div>
     </div>
@@ -274,13 +275,13 @@
 
   <div class="grid-2 even">
     <div class="panel reveal">
-      <h2 id="promoTitle">Promotions</h2>
+      <h2 id="promoTitle">Promotion performance</h2>
       <p class="sub">Lift = promo-week units vs. the item's non-promo baseline (non-promo weeks within 4 weeks either side). Net incremental profit also pays for the discount on baseline units.</p>
       <div class="chart-box" style="height:250px"><canvas id="chartPromo"></canvas></div>
       <div class="callout" id="promoNote"></div>
     </div>
     <div class="panel reveal">
-      <h2 id="stockTitle">Out-of-stocks</h2>
+      <h2 id="stockTitle">Out-of-stock impact</h2>
       <p class="sub">Estimated lost sales, last 52 weeks, top 8 items. Lost units = days out of stock x the item's units per in-stock day in the same region and week.</p>
       <div class="chart-box" style="height:310px"><canvas id="chartStock"></canvas></div>
     </div>
@@ -326,7 +327,10 @@
   </section>
 </main>
 
-<footer>Supplier Retail Performance &middot; a self-directed analytics portfolio project &middot; all data is simulated &middot; Python, SQLite, Chart.js</footer>
+<footer>
+  <div class="data-note"><b>Data note:</b> all data on this page is simulated for demonstration; no real retailer, supplier, brand or store data is shown.</div>
+  <div class="foot-meta">Supplier Retail Performance Analysis &middot; a self-directed analytics portfolio project &middot; Python, SQLite, Chart.js</div>
+</footer>
 
 <script>
 const DATA = __DATA_JSON__;
@@ -369,13 +373,13 @@ function drawKpis() {
 // ---------- categories ----------
 (function() {
   const top = cats[0], best = [...cats].sort((a, b) => b.yoy - a.yoy)[0];
-  document.getElementById("catTitle").innerHTML = `${esc(top.category)} leads at <span class="hl">${fmtPct(top.share, 0)}</span> of sales; ${esc(best.category)} grows fastest`;
+  document.getElementById("catTitle").innerHTML = `Net sales by category: ${esc(top.category)} is largest at <span class="hl">${fmtPct(top.share, 0)}</span>; ${esc(best.category)} has the highest growth`;
   const mx = Math.max(...cats.map(c => c.ltm_sales));
   document.getElementById("catRows").innerHTML = cats.map((c, i) => `<div class="cat-row ${i === 0 ? "top" : ""}" title="Gross margin ${fmtPct(c.gm_pct)}">
     <div>${esc(c.category)}</div><div class="bar"><i style="width:${c.ltm_sales/mx*100}%"></i></div><div class="v num">${fmtShort(c.ltm_sales)}</div>
     <div class="yoy"><span class="delta ${c.yoy >= 0 ? "up" : "down"}" style="margin:0">${fmtSigned(c.yoy)}</span></div></div>`).join("");
   const reg = DATA.region, hi = reg[0], lo = reg[reg.length-1];
-  document.getElementById("regTitle").innerHTML = `${esc(hi.region)} sells <span class="hl">${(hi.index_vs_chain/lo.index_vs_chain).toFixed(1)}x</span> per store what ${esc(lo.region)} does`;
+  document.getElementById("regTitle").innerHTML = `Sales per store by region: ${esc(hi.region)} <span class="hl">${(hi.index_vs_chain*100).toFixed(0)}</span> to ${esc(lo.region)} <span class="hl">${(lo.index_vs_chain*100).toFixed(0)}</span> (chain = 100)`;
   document.getElementById("regRows").innerHTML = reg.map((r, i) => `<div class="bullet-row ${i === reg.length-1 ? "low" : ""}" title="${esc(r.region)}: ${fmtMoney(r.sales_per_store)} per store, ${r.stores} stores">
     <div class="city">${esc(r.region)}</div><div class="track"><div class="fill" data-w="${Math.min(r.index_vs_chain/1.4*100, 100)}"></div><div class="tick" style="left:calc(${100/1.4}% - 1px)"></div></div><div class="val num">${(r.index_vs_chain*100).toFixed(0)}</div></div>`).join("");
   requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll("#regRows .fill").forEach(f => f.style.width = f.dataset.w + "%")));
@@ -386,9 +390,9 @@ let charts = {}, trendMetric = "sales";
 const wk = DATA.weekly_trend;
 const monthShort = d => { const x = new Date(d + "T00:00:00"); return x.toLocaleString("en-US", {month:"short"}) + " " + String(x.getFullYear()).slice(2); };
 const trendCfg = {
-  sales: {key:"sales", ma:"sales_ma4", ly:"sales_ly", f:fmtShort, t:fmtMoney, title:() => { const p = wk.slice(-52), s = p.reduce((a,b)=>a+b.sales,0); return `Weekly sales average <span class="hl">${fmtShort(s/52)}</span> over the last 52 weeks`; }},
-  units: {key:"units", f:v => fmtNum(v), t:v => fmtNum(v) + " units", title:() => { const lo = wk.slice(-52).reduce((a,b)=>b.units<a.units?b:a); return `Units dipped to <span class="hl">${fmtNum(lo.units)}</span> in the week of ${monthShort(lo.week_start)}`; }},
-  instock: {key:"instock", f:v => (v*100).toFixed(0)+"%", t:v => fmtPct(v), title:() => `In-stock averaged <span class="hl">${fmtPct(K.ltm_instock)}</span> over the last 52 weeks`},
+  sales: {key:"sales", ma:"sales_ma4", ly:"sales_ly", f:fmtShort, t:fmtMoney, title:() => { const p = wk.slice(-52), s = p.reduce((a,b)=>a+b.sales,0); return `Weekly net sales: <span class="hl">${fmtShort(s/52)}</span> average over the last 52 weeks`; }},
+  units: {key:"units", f:v => fmtNum(v), t:v => fmtNum(v) + " units", title:() => { const lo = wk.slice(-52).reduce((a,b)=>b.units<a.units?b:a); return `Weekly units: low of <span class="hl">${fmtNum(lo.units)}</span> in the week of ${monthShort(lo.week_start)}`; }},
+  instock: {key:"instock", f:v => (v*100).toFixed(0)+"%", t:v => fmtPct(v), title:() => `Weekly in-stock rate: <span class="hl">${fmtPct(K.ltm_instock)}</span> average over the last 52 weeks`},
 };
 const annotate = {
   id: "annotate",
@@ -457,12 +461,12 @@ document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click"
 // ---------- headlines ----------
 (function() {
   const pt = DATA.promo_by_type, win = [...pt].sort((a, b) => b.profit_per_discount_dollar - a.profit_per_discount_dollar)[0], lose = pt.filter(r => r.net_incr_profit < 0);
-  document.getElementById("promoTitle").innerHTML = lose.length ? `${lose.map(r => esc(r.promo_type)).join(" and ")} promotions <span class="hl">lost money</span> after discounts; ${esc(win.promo_type)} paid` : `All promotion types paid back; ${esc(win.promo_type)} best`;
+  document.getElementById("promoTitle").innerHTML = lose.length ? `Net incremental profit by promotion type: ${lose.map(r => esc(r.promo_type)).join(" and ")} <span class="hl">negative</span> after discounts; ${esc(win.promo_type)} positive` : `Net incremental profit by promotion type: all positive, ${esc(win.promo_type)} highest`;
   document.getElementById("promoNote").innerHTML = pt.map(r => `<b>${esc(r.promo_type)}:</b> ${r.promo_weeks} item-weeks, ${fmtSigned(r.avg_lift, 0)} average lift, ${fmtMoney(r.net_incr_profit)} net on ${fmtMoney(r.discount_cost)} of discount`).join("<br>") + `<br><i>These results come from the simulation's built-in assumptions about lift and discount depth, not from real promotions.</i>`;
   const s = DATA.instock_by_item, lostTot = s.reduce((a, r) => a + r.est_lost_sales, 0);
-  document.getElementById("stockTitle").innerHTML = `Out-of-stocks cost an estimated <span class="hl">${fmtShort(lostTot)}</span> in the last 52 weeks`;
+  document.getElementById("stockTitle").innerHTML = `Estimated lost sales from out-of-stocks: <span class="hl">${fmtShort(lostTot)}</span> in the last 52 weeks`;
   const f = DATA.space.reduce((a, r) => (a[r.space_flag] = (a[r.space_flag] || 0) + 1, a), {});
-  document.getElementById("spaceTitle").innerHTML = `<span class="hl">${f["Review space"] || 0} items</span> earn under 75% of their category's sales per foot; ${f["Add space"] || 0} earn 125% or more`;
+  document.getElementById("spaceTitle").innerHTML = `Sales per linear foot: <span class="hl">${f["Review space"] || 0} items</span> at 75% or less of category average, ${f["Add space"] || 0} at 125% or more`;
   document.getElementById("aboutNote").textContent = `Simulated by a seeded generator: ${M.items} items, ${M.stores} stores, ${M.weeks} weeks (${M.first_week} to ${M.last_week}), ${fmtNum(M.pos_rows)} weekly item-store rows, ${M.promo_events} promotion events. No real retailer, brand or data provider is represented. Lost sales, promo lift and space flags are estimates with simple methods; see the README for how they are calculated.`;
 })();
 
