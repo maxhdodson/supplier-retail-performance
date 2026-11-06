@@ -1,0 +1,31 @@
+item_id,item_name,category,brand,base_price,unit_cost
+1,Power Kitchen Degreaser,Cleaning,Hollis & Vale,6.99,4.62
+2,Clear Surface Spray,Cleaning,Hollis & Vale,5.24,3.58
+3,Easy Bathroom Foam,Cleaning,Brightfield,6.24,3.82
+4,Zest Floor Cleaner,Cleaning,Tandem Care,6.49,3.95
+5,Gentle Disinfectant Wipes,Cleaning,NorthPeak Home,6.99,4.34
+6,Classic Glass Cleaner,Cleaning,Hollis & Vale,3.74,2.45
+7,Active Stain Remover,Laundry,Tandem Care,15.99,10.65
+8,Clear Laundry Pods,Laundry,Tandem Care,13.24,8.9
+9,Bright Dryer Sheets,Laundry,Hollis & Vale,12.49,8.7
+10,Active Fabric Softener,Laundry,Tandem Care,10.74,7.26
+11,Pure Detergent,Laundry,NorthPeak Home,14.99,10.32
+12,Clear Shampoo,Personal Care,Hollis & Vale,7.24,4.36
+13,Classic Hand Soap,Personal Care,Tandem Care,4.99,2.79
+14,Pure Deodorant,Personal Care,Tandem Care,7.24,4.01
+15,Daily Lotion,Personal Care,Brightfield,5.49,3.32
+16,Zest Body Wash,Personal Care,Hollis & Vale,7.49,4.3
+17,Clear Conditioner,Personal Care,Hollis & Vale,6.99,4.18
+18,Power Cold Relief,Health & Wellness,Tandem Care,10.24,6.58
+19,Daily Pain Relief Gel,Health & Wellness,Tandem Care,11.24,6.12
+20,Pure Vitamin C Chews,Health & Wellness,Tandem Care,8.24,4.87
+21,Easy Allergy Tablets,Health & Wellness,NorthPeak Home,6.99,3.94
+22,Pure Sleep Aid,Health & Wellness,Brightfield,7.74,4.4
+23,Active Dog Treats,Pet,Hollis & Vale,17.99,11.06
+24,Ultra Pet Shampoo,Pet,Brightfield,13.49,9.0
+25,Classic Chew Toy Set,Pet,Hollis & Vale,7.49,4.88
+26,Bright Cat Litter,Pet,Brightfield,20.24,13.67
+27,Fresh Door Mat,Seasonal Home,Tandem Care,16.24,9.35
+28,Clear Air Freshener Set,Seasonal Home,NorthPeak Home,16.99,10.84
+29,Gentle Storage Bins,Seasonal Home,NorthPeak Home,8.74,5.03
+30,Zest Holiday Candle,Seasonal Home,NorthPeak Home,10.74,6.23

@@ -1,0 +1,31 @@
+item_name,category,instock,sales,lost_units,units,est_lost_sales,lost_unit_pct
+Bright Dryer Sheets,Laundry,0.9286,171163.65,1110.4403,14654,13869.3994,0.0704
+Ultra Pet Shampoo,Pet,0.9391,180289.29,886.0163,13821,11952.3605,0.0602
+Clear Air Freshener Set,Seasonal Home,0.9327,138794.22,630.0454,8388,10704.4718,0.0699
+Zest Holiday Candle,Seasonal Home,0.9565,211185.25,950.7376,20692,10210.9222,0.0439
+Pure Detergent,Laundry,0.943,145179.46,644.6343,10304,9663.0686,0.0589
+Gentle Storage Bins,Seasonal Home,0.9455,138325.92,965.0681,16393,8434.6948,0.0556
+Power Kitchen Degreaser,Cleaning,0.9722,283317.65,1186.0768,42910,8290.6766,0.0269
+Daily Pain Relief Gel,Health & Wellness,0.9265,85112.15,624.0724,7774,7014.5743,0.0743
+Bright Cat Litter,Pet,0.953,125041.85,345.0701,6499,6984.2186,0.0504
+Active Stain Remover,Laundry,0.948,110993.96,412.1364,7164,6590.0605,0.0544
+Active Fabric Softener,Laundry,0.9589,134002.62,521.8218,12803,5604.366,0.0392
+Pure Sleep Aid,Health & Wellness,0.9437,83150.7,668.5239,11018,5174.3747,0.0572
+Fresh Door Mat,Seasonal Home,0.9588,108613.73,309.2017,7020,5021.435,0.0422
+Easy Bathroom Foam,Cleaning,0.9451,70756.23,677.1287,11611,4225.283,0.0551
+Pure Vitamin C Chews,Health & Wellness,0.9402,59734.31,473.3985,7673,3900.804,0.0581
+Clear Conditioner,Personal Care,0.9696,111543.57,521.8545,16628,3647.7631,0.0304
+Clear Shampoo,Personal Care,0.9418,49003.3,455.6491,7133,3298.8997,0.06
+Pure Deodorant,Personal Care,0.9559,56708.35,368.5099,8107,2668.012,0.0435
+Classic Chew Toy Set,Pet,0.9447,42660.98,349.9081,5849,2620.8118,0.0564
+Clear Laundry Pods,Laundry,0.9527,42746.3,170.2782,3353,2254.4839,0.0483
+Power Cold Relief,Health & Wellness,0.9784,88338.65,217.2931,9168,2225.081,0.0232
+Active Dog Treats,Pet,0.9828,113358.28,108.6415,6512,1954.4613,0.0164
+Gentle Disinfectant Wipes,Cleaning,0.9765,63895.99,224.8311,9556,1571.5691,0.023
+Classic Hand Soap,Personal Care,0.9641,34699.55,257.1653,7295,1283.2549,0.0341
+Daily Lotion,Personal Care,0.9725,36787.64,205.5327,7090,1128.3746,0.0282
+Easy Allergy Tablets,Health & Wellness,0.9624,23943.19,141.2228,3566,987.1475,0.0381
+Zest Body Wash,Personal Care,0.9859,52694.87,102.7603,7387,769.6749,0.0137
+Classic Glass Cleaner,Cleaning,0.9716,19557.12,157.8831,5412,590.4827,0.0283
+Zest Floor Cleaner,Cleaning,0.9823,25656.68,76.6097,4191,497.1973,0.018
+Clear Surface Spray,Cleaning,0.9841,24318.18,88.2426,4965,462.3915,0.0175

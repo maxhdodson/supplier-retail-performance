@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supplier Retail Performance</title>
+<meta name="description" content="Interactive retail analytics dashboard on simulated point-of-sale data for a made-up consumer goods supplier.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f3eee7;
+    --card: #ffffff;
+    --card-alt: #f7f9fa;
+    --ink: #292936;
+    --ink-2: #4b4b5c;
+    --muted: #67718e;
+    --line: #e3dccf;
+    --accent: #dc7926;
+    --accent-ink: #a8530f;
+    --taupe: #a69282;
+    --band: #ece6dc;
+    --good: #1c4a36;
+    --bad: #b23b2e;
+    --shadow: 0 1px 2px rgba(41,41,54,.06), 0 6px 20px rgba(41,41,54,.06);
+    --grid: rgba(41,41,54,.08);
+  }
+  :root[data-theme="dark"] {
+    --bg: #17171f;
+    --card: #20202e;
+    --card-alt: #262636;
+    --ink: #f3eee7;
+    --ink-2: #cfc8bd;
+    --muted: #9aa3bd;
+    --line: #34344a;
+    --accent: #dc7926;
+    --accent-ink: #f0a064;
+    --taupe: #a69282;
+    --band: #2e2e42;
+    --good: #5db38d;
+    --bad: #e2705f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    --grid: rgba(243,238,231,.09);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.45;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+  a { color: var(--accent-ink); }
+
+  /* ---------- Header ---------- */
+  header {
+    background: linear-gradient(120deg, #292936 0%, #20202e 60%, #2b2230 100%);
+    color: #f3eee7;
+    padding: 34px 0 78px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(600px 220px at 85% 0%, rgba(220,121,38,.28), transparent 70%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 64px);
+    pointer-events: none;
+  }
+  header::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+    background: linear-gradient(90deg, #dc7926, #a69282 60%, transparent);
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 28px; position: relative; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 26px; flex-wrap: wrap; }
+  .eyebrow { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #dc7926; font-weight: 600; }
+  .pill-sim {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    border: 1px solid rgba(243,238,231,.28); color: #f3eee7;
+    padding: 5px 12px; border-radius: 999px; background: rgba(243,238,231,.07);
+  }
+  .pill-sim::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #dc7926; box-shadow: 0 0 0 3px rgba(220,121,38,.25); }
+  .top-actions { display: flex; align-items: center; gap: 10px; }
+  .icon-btn {
+    border: 1px solid rgba(243,238,231,.28); background: rgba(243,238,231,.07); color: #f3eee7;
+    border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer;
+  }
+  .icon-btn:hover { background: rgba(243,238,231,.16); }
+  .icon-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, th:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.08; letter-spacing: -.02em; font-weight: 700; margin: 0 0 14px; max-width: 18ch; }
+  h1 em { font-style: normal; color: #dc7926; }
+  .lede { max-width: 66ch; color: #d9d2c6; font-size: 15.5px; margin: 0; }
+  .lede b { color: #fff; font-weight: 600; }
+
+  /* ---------- Layout ---------- */
+  main { max-width: 1240px; margin: -52px auto 0; padding: 0 28px 20px; position: relative; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; margin-bottom: 22px; }
+  .kpi {
+    background: var(--card); border-radius: 14px; padding: 18px 20px 14px; box-shadow: var(--shadow);
+    border: 1px solid var(--line); border-top: 3px solid var(--accent);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .kpi:hover { transform: translateY(-2px); }
+  .kpi .label { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .kpi .value { font-size: 34px; font-weight: 700; letter-spacing: -.02em; margin: 6px 0 2px; }
+  .kpi .sub { font-size: 12.5px; color: var(--ink-2); }
+  .kpi .spark { height: 34px; margin-top: 8px; }
+  .kpi svg { width: 100%; height: 100%; display: block; }
+
+  .grid-2 { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 16px; margin-bottom: 16px; }
+  .grid-2.even { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .panel, .kpi { max-width: 100%; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 20px 22px 18px; min-width: 0; }
+  .panel h2 { font-size: 17px; line-height: 1.3; margin: 0 0 4px; letter-spacing: -.01em; }
+  .panel h2 .hl { color: var(--accent-ink); }
+  .panel .sub { color: var(--muted); font-size: 12.5px; margin: 0 0 14px; }
+  .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .chart-box { position: relative; height: 300px; }
+  .chart-box.tall { height: 340px; }
+  .seg { display: inline-flex; background: var(--card-alt); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+  .seg button { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 999px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+  /* bullet bars */
+  .bullets { display: flex; flex-direction: column; gap: 13px; margin-top: 6px; }
+  .bullet-row { display: grid; grid-template-columns: 96px 1fr 58px; align-items: center; gap: 12px; }
+  .bullet-row .city { font-size: 13px; font-weight: 500; }
+  .bullet-row .val { font-size: 13px; font-weight: 600; text-align: right; }
+  .track { position: relative; height: 22px; border-radius: 4px; background: linear-gradient(90deg, var(--band) 0 100%); }
+  .track .fill { position: absolute; left: 0; top: 6px; height: 10px; border-radius: 2px; background: var(--ink); width: 0; transition: width .9s cubic-bezier(.2,.7,.2,1); }
+  .bullet-row.low .fill { background: var(--accent); }
+  .track .tick { position: absolute; top: 1px; bottom: 1px; width: 3px; background: var(--taupe); border-radius: 2px; }
+  .bullet-row:hover .track { outline: 1px solid var(--taupe); }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 16px; }
+  .legend i { display: inline-block; vertical-align: -2px; margin-right: 6px; }
+  .legend .l-fill { width: 18px; height: 8px; background: var(--ink); border-radius: 2px; }
+  .legend .l-low { width: 18px; height: 8px; background: var(--accent); border-radius: 2px; }
+  .legend .l-tick { width: 3px; height: 14px; background: var(--taupe); border-radius: 2px; }
+
+  /* segmented bars */
+  .segbar { display: flex; height: 38px; border-radius: 8px; overflow: hidden; margin: 6px 0 12px; gap: 2px; }
+  .segbar div { display: flex; align-items: center; padding: 0 12px; color: #fff; font-size: 13px; font-weight: 600; min-width: 0; white-space: nowrap; overflow: hidden; }
+  .seg-note { font-size: 13px; color: var(--ink-2); margin: 0 0 6px; }
+  .seg-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); }
+  .seg-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; background: var(--c); vertical-align: -1px; }
+  .callout { margin-top: 16px; padding: 12px 14px; background: var(--card-alt); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 13px; color: var(--ink-2); }
+  .callout b { color: var(--ink); }
+
+  /* tables */
+  .block { margin-top: 16px; }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 12px; }
+  input[type=text], select {
+    padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 13px; background: var(--card-alt); color: var(--ink);
+  }
+  input[type=text] { min-width: 250px; }
+  .table-wrap { overflow: auto; max-height: 460px; border: 1px solid var(--line); border-radius: 10px; }
+  table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
+  th { position: sticky; top: 0; background: var(--card-alt); text-align: left; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 10px 12px; cursor: pointer; white-space: nowrap; border-bottom: 1px solid var(--line); user-select: none; z-index: 1; }
+  th:hover { color: var(--ink); }
+  th .arrow { opacity: 0; margin-left: 4px; }
+  th[aria-sort] .arrow { opacity: 1; color: var(--accent-ink); }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td.r, th.r { text-align: right; }
+  tbody tr:hover td { background: var(--card-alt); }
+  tbody tr:last-child td { border-bottom: 0; }
+  .status { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: var(--band); color: var(--ink-2); }
+  .status.Active { background: rgba(220,121,38,.16); color: var(--accent-ink); }
+  .status.Complete { background: rgba(28,74,54,.14); color: var(--good); }
+  .status.Cancelled { background: rgba(178,59,46,.14); color: var(--bad); }
+  .mbar { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
+  .mbar .m-track { width: 70px; height: 6px; background: var(--band); border-radius: 3px; overflow: hidden; }
+  .mbar .m-fill { height: 100%; background: var(--good); border-radius: 3px; }
+  .mbar.thin .m-fill { background: var(--accent); }
+  .var-over { color: var(--bad); font-weight: 600; }
+  .var-under { color: var(--ink-2); }
+  .empty { padding: 34px; text-align: center; color: var(--muted); font-size: 14px; }
+  .count-note { font-size: 12px; color: var(--muted); margin-left: auto; align-self: center; }
+
+  .etl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-top: 8px; }
+  .etl-chip { background: var(--card-alt); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+  .etl-chip b { display: block; font-size: 20px; letter-spacing: -.01em; }
+  .etl-chip span { font-size: 12px; color: var(--muted); }
+  .etl-chip.key { border-color: var(--accent); }
+
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 22px 20px 44px; }
+
+  .reveal { opacity: 0; transform: translateY(10px); animation: rise .6s ease forwards; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  .static .reveal { animation: none; opacity: 1; transform: none; }
+  .static .track .fill { transition: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { animation: none; opacity: 1; transform: none; }
+    .track .fill { transition: none; }
+    .kpi { transition: none; }
+    html { scroll-behavior: auto; }
+  }
+  @media (max-width: 1000px) {
+    .kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-2, .grid-2.even { grid-template-columns: minmax(0,1fr); }
+  }
+  @media (max-width: 560px) {
+    .wrap, main { padding-left: 16px; padding-right: 16px; }
+    .kpi-grid { grid-template-columns: minmax(0,1fr); }
+    .bullet-row { grid-template-columns: 78px 1fr 52px; gap: 8px; }
+    input[type=text] { min-width: 0; width: 100%; }
+    .panel { padding: 16px; }
+  }
+
+  .delta { display:inline-block; font-size:11.5px; font-weight:600; padding:2px 8px; border-radius:999px; margin-left:6px; }
+  .delta.up { background: rgba(28,74,54,.14); color: var(--good); }
+  .delta.down { background: rgba(178,59,46,.14); color: var(--bad); }
+  .cat-row { display:grid; grid-template-columns: 130px 1fr 92px 64px; gap:12px; align-items:center; margin-bottom:11px; font-size:13px; }
+  .cat-row .bar { height:12px; background: var(--band); border-radius:3px; position:relative; }
+  .cat-row .bar i { position:absolute; left:0; top:0; bottom:0; border-radius:3px; background: var(--taupe); }
+  .cat-row.top .bar i { background: var(--accent); }
+  .cat-row .v { text-align:right; font-weight:600; }
+  .flag { display:inline-block; padding:2px 9px; border-radius:999px; font-size:11.5px; font-weight:600; background: var(--band); color: var(--ink-2); }
+  .flag.add { background: rgba(28,74,54,.14); color: var(--good); }
+  .flag.rev { background: rgba(220,121,38,.16); color: var(--accent-ink); }
+  .grid-3 { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; margin-bottom:16px; }
+  @media (max-width:1000px){ .grid-3 { grid-template-columns: minmax(0,1fr); } }
+  @media (max-width:560px){ .cat-row { grid-template-columns: 96px 1fr 70px; } .cat-row .yoy { display:none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="eyebrow">Supplier Retail Performance</div>
+      <div class="top-actions">
+        <span class="pill-sim">Simulated data</span>
+        <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode">Dark mode</button>
+      </div>
+    </div>
+    <h1>What sells, what stalls, and <em>what the shelf earns</em></h1>
+    <p class="lede">Weekly point-of-sale analysis for a made-up consumer goods supplier: sales and margin, promotions, in-stock, and shelf space. The supplier, brands, items and stores are <b>all simulated</b>; nothing here is real company or retailer data.</p>
+  </div>
+</header>
+
+<main>
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="grid-2">
+    <div class="panel reveal">
+      <h2 id="catTitle">Category performance</h2>
+      <p class="sub">Last 52 weeks net sales, share of total, and change vs. the prior 52 weeks.</p>
+      <div id="catRows"></div>
+    </div>
+    <div class="panel reveal">
+      <h2 id="regTitle">Regions</h2>
+      <p class="sub">Sales per store indexed to the chain average (100 = average). Tick marks the chain average.</p>
+      <div class="bullets" id="regRows"></div>
+    </div>
+  </div>
+
+  <div class="panel reveal" style="margin-bottom:16px">
+    <div class="panel-head">
+      <div><h2 id="trendTitle">Weekly sales</h2><p class="sub">Chain net sales per week, 4-week moving average, and the same week last year.</p></div>
+      <div class="seg" role="group" aria-label="Trend metric">
+        <button data-m="sales" aria-pressed="true">Sales</button><button data-m="units" aria-pressed="false">Units</button><button data-m="instock" aria-pressed="false">In-stock %</button>
+      </div>
+    </div>
+    <div class="chart-box tall"><canvas id="chartTrend"></canvas></div>
+  </div>
+
+  <div class="grid-2 even">
+    <div class="panel reveal">
+      <h2 id="promoTitle">Promotions</h2>
+      <p class="sub">Lift = promo-week units vs. the item's non-promo baseline (non-promo weeks within 4 weeks either side). Net incremental profit also pays for the discount on baseline units.</p>
+      <div class="chart-box" style="height:250px"><canvas id="chartPromo"></canvas></div>
+      <div class="callout" id="promoNote"></div>
+    </div>
+    <div class="panel reveal">
+      <h2 id="stockTitle">Out-of-stocks</h2>
+      <p class="sub">Estimated lost sales, last 52 weeks, top 8 items. Lost units = days out of stock x the item's units per in-stock day in the same region and week.</p>
+      <div class="chart-box" style="height:310px"><canvas id="chartStock"></canvas></div>
+    </div>
+  </div>
+
+  <section class="panel block reveal">
+    <h2 id="spaceTitle">Shelf space</h2>
+    <p class="sub">Sales per linear foot of shelf, indexed to the item's category (1.00 = category average). Add space at 1.25 or more, review space at 0.75 or less.</p>
+    <div class="chart-box" style="height:520px"><canvas id="chartSpace"></canvas></div>
+  </section>
+
+  <section class="panel block reveal">
+    <h2>Item scorecard</h2>
+    <p class="sub">Last 52 weeks. Click a column to sort.</p>
+    <div class="controls">
+      <input type="text" id="itemSearch" placeholder="Search item or brand" aria-label="Search items">
+      <select id="catFilter" aria-label="Filter by category"><option value="">All categories</option></select>
+      <span class="count-note" id="rowCount"></span>
+    </div>
+    <div class="table-wrap">
+      <table id="itemTable">
+        <thead><tr>
+          <th data-key="item_name">Item<span class="arrow"></span></th>
+          <th data-key="category">Category<span class="arrow"></span></th>
+          <th class="r" data-key="rank_overall">Rank<span class="arrow"></span></th>
+          <th class="r" data-key="ltm_sales">Net sales<span class="arrow"></span></th>
+          <th class="r" data-key="share_of_category">Cat. share<span class="arrow"></span></th>
+          <th class="r" data-key="yoy">YoY<span class="arrow"></span></th>
+          <th class="r" data-key="gm_pct">Margin %<span class="arrow"></span></th>
+          <th class="r" data-key="instock">In-stock<span class="arrow"></span></th>
+          <th class="r" data-key="space_index">Space index<span class="arrow"></span></th>
+          <th data-key="space_flag">Space<span class="arrow"></span></th>
+        </tr></thead>
+        <tbody id="itemBody"></tbody>
+      </table>
+      <div class="empty" id="emptyState" hidden>No items match. Clear the search or pick another category.</div>
+    </div>
+  </section>
+
+  <section class="panel block reveal">
+    <h2>About this data</h2>
+    <p class="sub" id="aboutNote"></p>
+  </section>
+</main>
+
+<footer>Supplier Retail Performance &middot; a self-directed analytics portfolio project &middot; all data is simulated &middot; Python, SQLite, Chart.js</footer>
+
+<script>
+const DATA = __DATA_JSON__;
+const fmtNum = (n, d=0) => n==null ? "—" : Number(n).toLocaleString(undefined, {minimumFractionDigits:d, maximumFractionDigits:d});
+const fmtPct = (n, d=1) => n==null ? "—" : (n*100).toFixed(d) + "%";
+const fmtSigned = (n, d=1) => n==null ? "—" : (n>=0?"+":"") + (n*100).toFixed(d) + "%";
+const fmtMoney = n => n==null ? "—" : (n<0?"-":"") + "$" + Math.abs(Math.round(n)).toLocaleString();
+const fmtShort = n => { const a=Math.abs(n), s=n<0?"-":""; return a>=1e6 ? s+"$"+(a/1e6).toFixed(2)+"M" : a>=1e3 ? s+"$"+Math.round(a/1e3)+"K" : s+"$"+Math.round(a); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches || location.hash === "#static";
+if (reduceMotion) document.documentElement.classList.add("static");
+
+let theme = "light";
+try { theme = localStorage.getItem("srp-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); } catch(e) {}
+function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); document.getElementById("themeBtn").textContent = t === "dark" ? "Light mode" : "Dark mode"; }
+applyTheme(theme);
+document.getElementById("themeBtn").addEventListener("click", () => { theme = theme === "dark" ? "light" : "dark"; try { localStorage.setItem("srp-theme", theme); } catch(e) {} applyTheme(theme); drawCharts(); });
+
+const K = DATA.kpis[0], M = DATA.meta;
+const cats = DATA.category, items = DATA.items.map(r => ({...r}));
+const stockBy = Object.fromEntries(DATA.instock_by_item.map(r => [r.item_name, r]));
+const spaceBy = Object.fromEntries(DATA.space.map(r => [r.item_name, r]));
+items.forEach(r => { r.instock = (stockBy[r.item_name] || {}).instock; const s = spaceBy[r.item_name] || {}; r.space_index = s.space_index; r.space_flag = s.space_flag; });
+
+// ---------- KPIs ----------
+const delta = v => `<span class="delta ${v >= 0 ? "up" : "down"}">${fmtSigned(v)} YoY</span>`;
+function drawKpis() {
+  const kpis = [
+    {label:"Net sales, last 52 weeks", v:K.ltm_sales, f:fmtMoney, sub:delta(K.sales_yoy) + " vs. prior 52 weeks"},
+    {label:"Gross margin", v:K.gm_pct*100, f:v => v.toFixed(1)+"%", sub:fmtMoney(K.ltm_margin) + " gross profit"},
+    {label:"In-stock rate", v:K.ltm_instock*100, f:v => v.toFixed(1)+"%", sub:"share of store-item days on shelf"},
+    {label:"Sales sold on promotion", v:K.ltm_promo_share*100, f:v => v.toFixed(1)+"%", sub:fmtNum(K.ltm_units) + " units, " + delta(K.units_yoy).replace(" YoY","") + " YoY"},
+  ];
+  const g = document.getElementById("kpiGrid");
+  g.innerHTML = kpis.map((k, i) => `<div class="kpi reveal" style="animation-delay:${i*.07}s"><div class="label">${k.label}</div><div class="value num"><span data-i="${i}">${k.f(k.v)}</span></div><div class="sub">${k.sub}</div></div>`).join("");
+  if (!reduceMotion) g.querySelectorAll("[data-i]").forEach(el => { const k = kpis[+el.dataset.i], t0 = performance.now(); (function step(t) { const p = Math.min(1, (t-t0)/900); el.textContent = k.f(k.v * (1 - Math.pow(1-p, 3))); if (p < 1) requestAnimationFrame(step); })(t0); });
+}
+
+// ---------- categories ----------
+(function() {
+  const top = cats[0], best = [...cats].sort((a, b) => b.yoy - a.yoy)[0];
+  document.getElementById("catTitle").innerHTML = `${esc(top.category)} leads at <span class="hl">${fmtPct(top.share, 0)}</span> of sales; ${esc(best.category)} grows fastest`;
+  const mx = Math.max(...cats.map(c => c.ltm_sales));
+  document.getElementById("catRows").innerHTML = cats.map((c, i) => `<div class="cat-row ${i === 0 ? "top" : ""}" title="Gross margin ${fmtPct(c.gm_pct)}">
+    <div>${esc(c.category)}</div><div class="bar"><i style="width:${c.ltm_sales/mx*100}%"></i></div><div class="v num">${fmtShort(c.ltm_sales)}</div>
+    <div class="yoy"><span class="delta ${c.yoy >= 0 ? "up" : "down"}" style="margin:0">${fmtSigned(c.yoy)}</span></div></div>`).join("");
+  const reg = DATA.region, hi = reg[0], lo = reg[reg.length-1];
+  document.getElementById("regTitle").innerHTML = `${esc(hi.region)} sells <span class="hl">${(hi.index_vs_chain/lo.index_vs_chain).toFixed(1)}x</span> per store what ${esc(lo.region)} does`;
+  document.getElementById("regRows").innerHTML = reg.map((r, i) => `<div class="bullet-row ${i === reg.length-1 ? "low" : ""}" title="${esc(r.region)}: ${fmtMoney(r.sales_per_store)} per store, ${r.stores} stores">
+    <div class="city">${esc(r.region)}</div><div class="track"><div class="fill" data-w="${Math.min(r.index_vs_chain/1.4*100, 100)}"></div><div class="tick" style="left:calc(${100/1.4}% - 1px)"></div></div><div class="val num">${(r.index_vs_chain*100).toFixed(0)}</div></div>`).join("");
+  requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll("#regRows .fill").forEach(f => f.style.width = f.dataset.w + "%")));
+})();
+
+// ---------- charts ----------
+let charts = {}, trendMetric = "sales";
+const wk = DATA.weekly_trend;
+const monthShort = d => { const x = new Date(d + "T00:00:00"); return x.toLocaleString("en-US", {month:"short"}) + " " + String(x.getFullYear()).slice(2); };
+const trendCfg = {
+  sales: {key:"sales", ma:"sales_ma4", ly:"sales_ly", f:fmtShort, t:fmtMoney, title:() => { const p = wk.slice(-52), s = p.reduce((a,b)=>a+b.sales,0); return `Weekly sales average <span class="hl">${fmtShort(s/52)}</span> over the last 52 weeks`; }},
+  units: {key:"units", f:v => fmtNum(v), t:v => fmtNum(v) + " units", title:() => { const lo = wk.slice(-52).reduce((a,b)=>b.units<a.units?b:a); return `Units dipped to <span class="hl">${fmtNum(lo.units)}</span> in the week of ${monthShort(lo.week_start)}`; }},
+  instock: {key:"instock", f:v => (v*100).toFixed(0)+"%", t:v => fmtPct(v), title:() => `In-stock averaged <span class="hl">${fmtPct(K.ltm_instock)}</span> over the last 52 weeks`},
+};
+const annotate = {
+  id: "annotate",
+  afterDatasetsDraw(chart) {
+    const n = chart.options.plugins.annotate; if (!n || n.index == null) return;
+    const pt = chart.getDatasetMeta(0).data[n.index]; if (!pt) return; const {ctx, chartArea} = chart; ctx.save(); ctx.font = "600 11.5px Inter, sans-serif";
+    const w = ctx.measureText(n.text).width, x = Math.min(Math.max(pt.x - w/2, chartArea.left), chartArea.right - w), y = pt.y + 22;
+    ctx.fillStyle = css("--card"); ctx.globalAlpha = .85; ctx.fillRect(x-4, y-10, w+8, 18); ctx.globalAlpha = 1; ctx.fillStyle = css("--accent-ink"); ctx.textBaseline = "middle"; ctx.fillText(n.text, x, y);
+    ctx.beginPath(); ctx.arc(pt.x, pt.y, 5, 0, 7); ctx.fillStyle = css("--accent"); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = css("--card"); ctx.stroke(); ctx.restore();
+  }
+};
+const barLabels = {
+  id: "barLabels",
+  afterDatasetsDraw(chart) {
+    const cfg = chart.options.plugins.barLabels; if (!cfg) return; const {ctx} = chart; ctx.save(); ctx.font = "600 11.5px Inter, sans-serif"; ctx.fillStyle = css("--ink"); ctx.textBaseline = "middle";
+    chart.getDatasetMeta(0).data.forEach((bar, i) => { const v = chart.data.datasets[0].data[i], t = fmtShort(v), horiz = chart.options.indexAxis === "y";
+      if (horiz) { ctx.textAlign = v >= 0 ? "left" : "right"; ctx.fillText(t, bar.x + (v >= 0 ? 6 : -6), bar.y); } else { ctx.textAlign = "center"; ctx.fillText(t, bar.x, v >= 0 ? bar.y - 10 : bar.y + 12); } });
+    ctx.restore();
+  }
+};
+function drawCharts() {
+  Object.values(charts).forEach(c => c.destroy());
+  Chart.defaults.font.family = "Inter, sans-serif"; Chart.defaults.color = css("--muted"); Chart.defaults.borderColor = css("--grid");
+  const accent = css("--accent"), taupe = css("--taupe"), ink = css("--ink"), good = css("--good"), bad = css("--bad"), anim = reduceMotion ? false : {duration: 800, easing: "easeOutQuart"};
+
+  // trend
+  const c = trendCfg[trendMetric], vals = wk.map(r => r[c.key]);
+  const g = document.getElementById("chartTrend").getContext("2d"), grad = g.createLinearGradient(0, 0, 0, 340); grad.addColorStop(0, accent + "55"); grad.addColorStop(1, accent + "05");
+  const ds = [{label: "Weekly", data: vals, borderColor: accent, backgroundColor: grad, fill: true, tension: .25, borderWidth: 1.6, pointRadius: 0, pointHoverRadius: 4}];
+  if (c.ma) { ds.push({label: "4-week average", data: wk.map(r => r[c.ma]), borderColor: ink, borderWidth: 2, pointRadius: 0, tension: .3, fill: false});
+              ds.push({label: "Same week last year", data: wk.map(r => r[c.ly]), borderColor: taupe, borderDash: [5, 4], borderWidth: 1.6, pointRadius: 0, tension: .25, fill: false}); }
+  const iMax = vals.indexOf(Math.max(...vals));
+  document.getElementById("trendTitle").innerHTML = c.title();
+  charts.trend = new Chart(document.getElementById("chartTrend"), {type: "line", plugins: [annotate],
+    data: {labels: wk.map(r => monthShort(r.week_start)), datasets: ds},
+    options: {responsive: true, maintainAspectRatio: false, animation: anim, interaction: {mode: "index", intersect: false},
+      scales: {x: {grid: {display: false}, ticks: {maxTicksLimit: 9, maxRotation: 0}}, y: {beginAtZero: trendMetric !== "instock", ticks: {callback: v => c.f(v)}, border: {display: false}}},
+      plugins: {legend: {display: ds.length > 1, labels: {boxWidth: 14, usePointStyle: false}}, tooltip: {callbacks: {title: i => "Week of " + wk[i[0].dataIndex].week_start, label: x => x.dataset.label + ": " + (x.raw == null ? "n/a" : c.t(x.raw))}}, annotate: {index: iMax, text: "Peak week"}}}});
+
+  // promo: net incremental profit by type, with lift in the label
+  const pt = DATA.promo_by_type;
+  charts.promo = new Chart(document.getElementById("chartPromo"), {type: "bar", plugins: [barLabels],
+    data: {labels: pt.map(r => `${r.promo_type} (lift ${fmtSigned(r.avg_lift, 0)})`), datasets: [{data: pt.map(r => r.net_incr_profit), backgroundColor: pt.map(r => r.net_incr_profit >= 0 ? good : bad), borderRadius: 4, barThickness: 36}]},
+    options: {indexAxis: "y", responsive: true, maintainAspectRatio: false, animation: anim, layout: {padding: {right: 60, left: 6}},
+      scales: {x: {min: Math.min(0, ...pt.map(r => r.net_incr_profit)) * 1.7, ticks: {callback: v => fmtShort(v)}, grid: {color: css("--grid")}, border: {display: false}}, y: {grid: {display: false}, border: {display: false}, ticks: {color: ink, font: {weight: 500}}}},
+      plugins: {legend: {display: false}, barLabels: {on: true}, tooltip: {callbacks: {label: x => `${fmtMoney(x.raw)} net incremental profit on ${fmtMoney(pt[x.dataIndex].discount_cost)} of discount`}}}}});
+
+  // stock
+  const st = DATA.instock_by_item.slice(0, 8);
+  charts.stock = new Chart(document.getElementById("chartStock"), {type: "bar", plugins: [barLabels],
+    data: {labels: st.map(r => r.item_name), datasets: [{data: st.map(r => r.est_lost_sales), backgroundColor: st.map((_, i) => i < 3 ? accent : taupe), borderRadius: 4, barThickness: 22}]},
+    options: {indexAxis: "y", responsive: true, maintainAspectRatio: false, animation: anim, layout: {padding: {right: 50}},
+      scales: {x: {display: false}, y: {grid: {display: false}, border: {display: false}, ticks: {color: ink, font: {size: 12}}}},
+      plugins: {legend: {display: false}, barLabels: {on: true}, tooltip: {callbacks: {label: x => `${fmtMoney(x.raw)} est. lost sales, in-stock ${fmtPct(st[x.dataIndex].instock)}`}}}}});
+
+  // space
+  const sp = DATA.space;
+  charts.space = new Chart(document.getElementById("chartSpace"), {type: "bar",
+    data: {labels: sp.map(r => r.item_name), datasets: [{data: sp.map(r => r.space_index), backgroundColor: sp.map(r => r.space_flag === "Add space" ? good : r.space_flag === "Review space" ? accent : taupe), borderRadius: 3, barThickness: 11}]},
+    options: {indexAxis: "y", responsive: true, maintainAspectRatio: false, animation: anim,
+      scales: {x: {min: 0, ticks: {callback: v => v.toFixed(1)}, grid: {color: css("--grid")}, border: {display: false}, title: {display: true, text: "Space index (category average = 1.00)"}}, y: {grid: {display: false}, border: {display: false}, ticks: {color: ink, font: {size: 11}}}},
+      plugins: {legend: {display: false}, tooltip: {callbacks: {label: x => `index ${x.raw.toFixed(2)}, ${fmtMoney(sp[x.dataIndex].sales_per_ft)} sales per linear ft, ${sp[x.dataIndex].space_flag}`}}}}});
+}
+document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { trendMetric = b.dataset.m; document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); drawCharts(); }));
+
+// ---------- headlines ----------
+(function() {
+  const pt = DATA.promo_by_type, win = [...pt].sort((a, b) => b.profit_per_discount_dollar - a.profit_per_discount_dollar)[0], lose = pt.filter(r => r.net_incr_profit < 0);
+  document.getElementById("promoTitle").innerHTML = lose.length ? `${lose.map(r => esc(r.promo_type)).join(" and ")} promotions <span class="hl">lost money</span> after discounts; ${esc(win.promo_type)} paid` : `All promotion types paid back; ${esc(win.promo_type)} best`;
+  document.getElementById("promoNote").innerHTML = pt.map(r => `<b>${esc(r.promo_type)}:</b> ${r.promo_weeks} item-weeks, ${fmtSigned(r.avg_lift, 0)} average lift, ${fmtMoney(r.net_incr_profit)} net on ${fmtMoney(r.discount_cost)} of discount`).join("<br>") + `<br><i>These results come from the simulation's built-in assumptions about lift and discount depth, not from real promotions.</i>`;
+  const s = DATA.instock_by_item, lostTot = s.reduce((a, r) => a + r.est_lost_sales, 0);
+  document.getElementById("stockTitle").innerHTML = `Out-of-stocks cost an estimated <span class="hl">${fmtShort(lostTot)}</span> in the last 52 weeks`;
+  const f = DATA.space.reduce((a, r) => (a[r.space_flag] = (a[r.space_flag] || 0) + 1, a), {});
+  document.getElementById("spaceTitle").innerHTML = `<span class="hl">${f["Review space"] || 0} items</span> earn under 75% of their category's sales per foot; ${f["Add space"] || 0} earn 125% or more`;
+  document.getElementById("aboutNote").textContent = `Simulated by a seeded generator: ${M.items} items, ${M.stores} stores, ${M.weeks} weeks (${M.first_week} to ${M.last_week}), ${fmtNum(M.pos_rows)} weekly item-store rows, ${M.promo_events} promotion events. No real retailer, brand or data provider is represented. Lost sales, promo lift and space flags are estimates with simple methods; see the README for how they are calculated.`;
+})();
+
+// ---------- table ----------
+const sel = document.getElementById("catFilter"); cats.forEach(c => sel.insertAdjacentHTML("beforeend", `<option>${esc(c.category)}</option>`));
+const st = {key: "ltm_sales", dir: -1};
+function renderItems() {
+  const q = document.getElementById("itemSearch").value.toLowerCase(), cf = sel.value;
+  const rows = items.filter(r => (!cf || r.category === cf) && (!q || (r.item_name + " " + r.brand).toLowerCase().includes(q)));
+  const k = st.key; rows.sort((a, b) => (a[k] > b[k] ? 1 : a[k] < b[k] ? -1 : 0) * st.dir);
+  document.getElementById("itemBody").innerHTML = rows.map(r => `<tr><td>${esc(r.item_name)}</td><td>${esc(r.category)}</td><td class="r num">${r.rank_overall}</td><td class="r num">${fmtMoney(r.ltm_sales)}</td>
+    <td class="r num">${fmtPct(r.share_of_category)}</td><td class="r num ${r.yoy >= 0 ? "var-under" : "var-over"}">${fmtSigned(r.yoy)}</td><td class="r num">${fmtPct(r.gm_pct)}</td><td class="r num">${fmtPct(r.instock)}</td>
+    <td class="r num">${r.space_index == null ? "—" : r.space_index.toFixed(2)}</td><td><span class="flag ${r.space_flag === "Add space" ? "add" : r.space_flag === "Review space" ? "rev" : ""}">${esc(r.space_flag || "—")}</span></td></tr>`).join("");
+  document.getElementById("emptyState").hidden = rows.length > 0; document.getElementById("rowCount").textContent = `${rows.length} of ${items.length} items`;
+}
+const ths = document.querySelectorAll("#itemTable th");
+const arrows = () => ths.forEach(th => { const on = th.dataset.key === st.key; th.toggleAttribute("aria-sort", on); if (on) th.setAttribute("aria-sort", st.dir > 0 ? "ascending" : "descending"); th.querySelector(".arrow").textContent = on ? (st.dir > 0 ? "▲" : "▼") : ""; });
+ths.forEach(th => { th.tabIndex = 0; const go = () => { st.dir = st.key === th.dataset.key ? -st.dir : (th.dataset.key === "item_name" || th.dataset.key === "category" || th.dataset.key === "space_flag" ? 1 : -1); st.key = th.dataset.key; arrows(); renderItems(); };
+  th.addEventListener("click", go); th.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } }); });
+document.getElementById("itemSearch").addEventListener("input", renderItems); sel.addEventListener("change", renderItems);
+
+drawKpis(); drawCharts(); arrows(); renderItems();
+</script>
+</body>
+</html>

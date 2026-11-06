@@ -1,0 +1,31 @@
+item_id,item_name,category,brand,ltm_sales,py_sales,yoy,gm_pct,ltm_units,share_of_category,rank_in_category,rank_overall
+1,Power Kitchen Degreaser,Cleaning,Hollis & Vale,283317.65,287518.26,-0.0146,0.3003,42910,0.5812,1,1
+30,Zest Holiday Candle,Seasonal Home,NorthPeak Home,211185.25,212830.12,-0.0077,0.3896,20692,0.3538,1,2
+24,Ultra Pet Shampoo,Pet,Brightfield,180289.29,179443.52,0.0047,0.3101,13821,0.3908,1,3
+9,Bright Dryer Sheets,Laundry,Hollis & Vale,171163.65,148856.11,0.1499,0.2552,14654,0.2833,1,4
+11,Pure Detergent,Laundry,NorthPeak Home,145179.46,148904.05,-0.025,0.2675,10304,0.2403,2,5
+28,Clear Air Freshener Set,Seasonal Home,NorthPeak Home,138794.22,134041.5,0.0355,0.3449,8388,0.2325,2,6
+29,Gentle Storage Bins,Seasonal Home,NorthPeak Home,138325.92,145733.12,-0.0508,0.4039,16393,0.2317,3,7
+10,Active Fabric Softener,Laundry,Tandem Care,134002.62,138379.08,-0.0316,0.3064,12803,0.2218,3,8
+26,Bright Cat Litter,Pet,Brightfield,125041.85,117541.24,0.0638,0.2895,6499,0.271,2,9
+23,Active Dog Treats,Pet,Hollis & Vale,113358.28,123989.45,-0.0857,0.3646,6512,0.2457,3,10
+17,Clear Conditioner,Personal Care,Hollis & Vale,111543.57,97466.31,0.1444,0.3769,16628,0.3267,1,11
+7,Active Stain Remover,Laundry,Tandem Care,110993.96,115794.84,-0.0415,0.3126,7164,0.1837,4,12
+27,Fresh Door Mat,Seasonal Home,Tandem Care,108613.73,112393.28,-0.0336,0.3957,7020,0.182,4,13
+18,Power Cold Relief,Health & Wellness,Tandem Care,88338.65,87548.74,0.009,0.3171,9168,0.2596,1,14
+19,Daily Pain Relief Gel,Health & Wellness,Tandem Care,85112.15,86119.76,-0.0117,0.441,7774,0.2501,2,15
+22,Pure Sleep Aid,Health & Wellness,Brightfield,83150.7,82685.84,0.0056,0.417,11018,0.2444,3,16
+3,Easy Bathroom Foam,Cleaning,Brightfield,70756.23,72349.24,-0.022,0.3731,11611,0.1451,2,17
+5,Gentle Disinfectant Wipes,Cleaning,NorthPeak Home,63895.99,68533.96,-0.0677,0.3509,9556,0.1311,3,18
+20,Pure Vitamin C Chews,Health & Wellness,Tandem Care,59734.31,61961.18,-0.0359,0.3744,7673,0.1755,4,19
+14,Pure Deodorant,Personal Care,Tandem Care,56708.35,59180.07,-0.0418,0.4267,8107,0.1661,2,20
+16,Zest Body Wash,Personal Care,Hollis & Vale,52694.87,54840.22,-0.0391,0.3972,7387,0.1543,3,21
+12,Clear Shampoo,Personal Care,Hollis & Vale,49003.3,50097.62,-0.0218,0.3654,7133,0.1435,4,22
+8,Clear Laundry Pods,Laundry,Tandem Care,42746.3,47891.42,-0.1074,0.3019,3353,0.0708,5,23
+25,Classic Chew Toy Set,Pet,Hollis & Vale,42660.98,42330.31,0.0078,0.3309,5849,0.0925,4,24
+15,Daily Lotion,Personal Care,Brightfield,36787.64,36359.49,0.0118,0.3601,7090,0.1077,5,25
+13,Classic Hand Soap,Personal Care,Tandem Care,34699.55,34599.77,0.0029,0.4134,7295,0.1016,6,26
+4,Zest Floor Cleaner,Cleaning,Tandem Care,25656.68,24424.09,0.0505,0.3548,4191,0.0526,4,27
+2,Clear Surface Spray,Cleaning,Hollis & Vale,24318.18,22034.31,0.1037,0.2691,4965,0.0499,5,28
+21,Easy Allergy Tablets,Health & Wellness,NorthPeak Home,23943.19,24770.89,-0.0334,0.4132,3566,0.0704,5,29
+6,Classic Glass Cleaner,Cleaning,Hollis & Vale,19557.12,18662.34,0.0479,0.322,5412,0.0401,6,30

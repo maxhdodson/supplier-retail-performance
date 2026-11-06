@@ -1,0 +1,31 @@
+item_id,item_name,category,ltm_sales,ltm_margin,store_feet,store_facings,sales_per_ft,margin_per_ft,cat_sales_per_ft,space_index,space_flag
+1,Power Kitchen Degreaser,Cleaning,283317.65,85073.45,45.36,136,6245.9799,1875.517,2077.6588,3.0063,Add space
+17,Clear Conditioner,Personal Care,111543.57,42038.53,36.0,144,3098.4325,1167.7369,1351.4775,2.2926,Add space
+24,Ultra Pet Shampoo,Pet,180289.29,55900.29,23.92,72,7537.1777,2336.9686,3766.7407,2.001,Add space
+10,Active Fabric Softener,Laundry,134002.62,41052.84,29.36,88,4564.1219,1398.2575,2588.6441,1.7631,Add space
+18,Power Cold Relief,Health & Wellness,88338.65,28013.21,34.64,104,2550.192,808.6954,1600.2587,1.5936,Add space
+29,Gentle Storage Bins,Seasonal Home,138325.92,55869.13,32.0,128,4322.685,1745.9103,3110.2497,1.3898,Add space
+9,Bright Dryer Sheets,Laundry,171163.65,43673.85,48.0,96,3565.9094,909.8719,2588.6441,1.3775,Add space
+11,Pure Detergent,Laundry,145179.46,38842.18,48.08,144,3019.5395,807.8656,2588.6441,1.1665,Balanced
+16,Zest Body Wash,Personal Care,52694.87,20930.77,34.64,104,1521.2145,604.237,1351.4775,1.1256,Balanced
+19,Daily Pain Relief Gel,Health & Wellness,85112.15,37535.27,50.64,152,1680.7297,741.2178,1600.2587,1.0503,Balanced
+22,Pure Sleep Aid,Health & Wellness,83150.7,34671.5,50.08,120,1660.3574,692.3223,1600.2587,1.0376,Balanced
+26,Bright Cat Litter,Pet,125041.85,36200.52,32.0,128,3907.5578,1131.2662,3766.7407,1.0374,Balanced
+27,Fresh Door Mat,Seasonal Home,108613.73,42976.73,34.0,136,3194.5215,1264.0215,3110.2497,1.0271,Balanced
+20,Pure Vitamin C Chews,Health & Wellness,59734.31,22366.8,37.36,112,1598.8841,598.6831,1600.2587,0.9991,Balanced
+23,Active Dog Treats,Pet,113358.28,41335.56,33.36,80,3398.03,1239.0755,3766.7407,0.9021,Balanced
+28,Clear Air Freshener Set,Seasonal Home,138794.22,47868.3,49.92,120,2780.3329,958.9002,3110.2497,0.8939,Balanced
+30,Zest Holiday Candle,Seasonal Home,211185.25,82274.09,76.0,152,2778.7533,1082.5538,3110.2497,0.8934,Balanced
+14,Pure Deodorant,Personal Care,56708.35,24199.28,49.92,120,1135.9846,484.7612,1351.4775,0.8406,Balanced
+12,Clear Shampoo,Personal Care,49003.3,17903.42,43.36,104,1130.1499,412.9018,1351.4775,0.8362,Balanced
+3,Easy Bathroom Foam,Cleaning,70756.23,26402.21,42.64,128,1659.3863,619.1888,2077.6588,0.7987,Balanced
+7,Active Stain Remover,Laundry,110993.96,34697.36,59.92,144,1852.3692,579.0614,2588.6441,0.7156,Review space
+5,Gentle Disinfectant Wipes,Cleaning,63895.99,22422.95,46.64,112,1369.9826,480.7665,2077.6588,0.6594,Review space
+15,Daily Lotion,Personal Care,36787.64,13248.84,43.36,104,848.4234,305.5544,1351.4775,0.6278,Review space
+13,Classic Hand Soap,Personal Care,34699.55,14346.5,45.36,136,764.9813,316.2809,1351.4775,0.566,Review space
+4,Zest Floor Cleaner,Cleaning,25656.68,9102.23,29.36,88,873.8651,310.0215,2077.6588,0.4206,Review space
+21,Easy Allergy Tablets,Health & Wellness,23943.19,9893.15,39.92,96,599.7793,247.8244,1600.2587,0.3748,Review space
+8,Clear Laundry Pods,Laundry,42746.3,12904.6,48.0,96,890.5479,268.8458,2588.6441,0.344,Review space
+25,Classic Chew Toy Set,Pet,42660.98,14117.86,33.2,80,1284.9693,425.2367,3766.7407,0.3411,Review space
+2,Clear Surface Spray,Cleaning,24318.18,6543.48,36.0,144,675.505,181.7633,2077.6588,0.3251,Review space
+6,Classic Glass Cleaner,Cleaning,19557.12,6297.72,34.64,104,564.582,181.8048,2077.6588,0.2717,Review space

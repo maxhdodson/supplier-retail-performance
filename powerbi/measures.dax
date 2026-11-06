@@ -1,0 +1,54 @@
+// measures.dax: DAX measures for the star schema in /data.
+// STATUS: NOT RUN IN POWER BI. These were written without opening Power BI.
+// Max loads the CSVs, builds the model and the .pbix himself, and validates
+// each measure against the SQL results in sql/02_analysis_queries.sql.
+//
+// Model (all one-to-many, single direction, dimension -> fact):
+//   dim_item[item_id]   -> fact_pos_monthly[item_id]
+//   dim_store[store_id] -> fact_pos_monthly[store_id]
+//   dim_date[month]     -> fact_pos_monthly[month]   (use a month-level date table, see below)
+//   planogram[cluster, item_id] relates to dim_store[cluster] and dim_item[item_id]
+//   Data is SIMULATED.
+//
+// Month date table (create as a calculated table, then mark it as the date table):
+// Calendar =
+//   VAR _m = DISTINCT ( fact_pos_monthly[month] )
+//   RETURN ADDCOLUMNS ( _m, "MonthStart", DATE ( VALUE ( LEFT ( [month], 4 ) ), VALUE ( RIGHT ( [month], 2 ) ), 1 ) )
+
+Net Sales = SUM ( fact_pos_monthly[net_sales] )
+Units = SUM ( fact_pos_monthly[units] )
+Gross Profit = SUM ( fact_pos_monthly[net_sales] ) - SUM ( fact_pos_monthly[cost] )
+Gross Margin % = DIVIDE ( [Gross Profit], [Net Sales] )
+
+Net Sales LY = CALCULATE ( [Net Sales], DATEADD ( Calendar[MonthStart], -12, MONTH ) )
+Net Sales YoY % = DIVIDE ( [Net Sales] - [Net Sales LY], [Net Sales LY] )
+
+// Share of the selected category (or of all items when no category is selected)
+Share of Category % =
+    DIVIDE ( [Net Sales], CALCULATE ( [Net Sales], ALLEXCEPT ( dim_item, dim_item[category] ) ) )
+
+Item Rank in Category =
+    RANKX ( ALLEXCEPT ( dim_item, dim_item[category] ), [Net Sales], , DESC, DENSE )
+
+In-Stock % = DIVIDE ( SUM ( fact_pos_monthly[in_stock_days] ), SUM ( fact_pos_monthly[total_days] ) )
+
+Promo Weeks = SUM ( fact_pos_monthly[promo_weeks] )
+
+// Linear feet per item = sum over stores of that store cluster's planogram feet.
+// Requires planogram related to dim_store[cluster]; this version iterates stores.
+Linear Feet =
+    SUMX ( dim_store, CALCULATE ( SUM ( planogram[linear_ft] ) ) )
+
+Sales per Linear Foot = DIVIDE ( [Net Sales], [Linear Feet] )
+
+Space Index =
+    VAR _cat =
+        DIVIDE (
+            CALCULATE ( [Net Sales], ALLEXCEPT ( dim_item, dim_item[category] ) ),
+            CALCULATE ( [Linear Feet], ALLEXCEPT ( dim_item, dim_item[category] ) )
+        )
+    RETURN DIVIDE ( [Sales per Linear Foot], _cat )
+
+// Note: the promo lift and lost-sales calculations in this project use weekly
+// baselines (window functions in SQL). They are not reproduced in DAX here because
+// the monthly fact does not carry the weekly detail they need.
